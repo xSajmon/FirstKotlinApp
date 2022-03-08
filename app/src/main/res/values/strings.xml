@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="enter_password_to_see_protected_content">Enter password to see protected content:</string>
+    <string name="your_message">Your Message:</string>
+    <string name="save">Save &amp; Exit</string>
+    <string name="reset_password">Reset password</string>
+</resources>
