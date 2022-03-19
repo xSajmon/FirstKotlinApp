@@ -1,16 +1,13 @@
 package com.example.myapplication
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-
-import java.nio.charset.Charset
+import androidx.appcompat.app.AppCompatActivity
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 
 class MessageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,13 +15,21 @@ class MessageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_message)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         val editText: EditText = findViewById(R.id.messageBody)
-        editText.setText(intent.getStringExtra("response"))
 
-        val queue = Volley.newRequestQueue(this)
-        val password = intent.getStringExtra("passwd")
-        val url = "https://10.0.2.2:443/save-message/${password}"
+
+        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            "xyz",
+            masterKey,
+            applicationContext,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        editText.setText(sharedPreferences.getString("msg", ""))
         val button: Button = findViewById(R.id.saveBtn)
         val buttonP: Button = findViewById(R.id.resetBtn)
+
 
         button.setOnClickListener {
             val builder = AlertDialog.Builder(this)
@@ -34,38 +39,15 @@ class MessageActivity : AppCompatActivity() {
 
                 }
                 .setPositiveButton("Yes") { dialog, which ->
+                    sharedPreferences.edit().putString("msg", editText.text.toString()).apply()
                     val intent = Intent(this, MainActivity::class.java)
-                    val requestBody = editText.text.toString()
-                    val stringRequest = object :StringRequest(
-                       Method.POST, url,
-                        { response ->
-                            startActivity(intent)
-
-                        }, { error ->
-                            println(error.message)
-                            Toast.makeText(
-                                applicationContext,
-                                "Failed.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        })
-                    {
-                        override fun getBody(): ByteArray {
-
-                            return requestBody.toByteArray(Charset.defaultCharset())
-                        }
-                    }
-                    println(url)
-                    println(requestBody)
-                    println(stringRequest.body)
-                    queue.add(stringRequest)
+                    startActivity(intent)
                 }
            builder.show()
         }
 
         buttonP.setOnClickListener{
             val intentPasswordActivity = Intent(this, PasswordActivity::class.java)
-            intentPasswordActivity.putExtra("passwd", password)
             startActivity(intentPasswordActivity)
         }
 

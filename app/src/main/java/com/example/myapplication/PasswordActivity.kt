@@ -1,48 +1,71 @@
 package com.example.myapplication
 
+
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
+
 
 class PasswordActivity : AppCompatActivity() {
+    private val atLeastOneUppercase = Regex(".*[A-Z].*")
+    private val atLeastOneDigit = Regex(".*\\d.*")
+    private val atLeastOneSpecial = Regex(".*\\W.*")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password)
 
-        val queue = Volley.newRequestQueue(this)
         val button : Button = findViewById(R.id.reset)
-        val oldPasswd= intent.getStringExtra("passwd")
+        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            "xyz",
+            masterKey,
+            applicationContext,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
 
         button.setOnClickListener {
-            val oldp: EditText = findViewById(R.id.oldpass)
-            val newp: EditText = findViewById(R.id.newpass1)
-            val newpr: EditText = findViewById(R.id.newpass2)
+            val oldP: EditText = findViewById(R.id.oldpass)
+            val newP: EditText = findViewById(R.id.newpass1)
+            val newPR: EditText = findViewById(R.id.newpass2)
 
             fun validPassword(): Boolean{
-                if(oldp.text.toString().equals("")){
-                    oldp.error = "Old password required."
+                if(oldP.text.isEmpty()){
+                    oldP.error = "Old password required."
                     return false
                 }
-                if(newp.text.toString().equals("")){
-                    newp.error = "Enter new password"
+                if(newP.text.toString().isEmpty()){
+                    newP.error = "Enter new password"
                     return false
                     }
-                if(newpr.text.toString().equals("")){
-                    newpr.error = "Confirm new password."
+                if(newPR.text.toString().isEmpty()){
+                    newPR.error = "Confirm new password."
                         return false
                     }
-                if(newpr.text.toString() != newp.text.toString()){
-                    newpr.error = "Password does not match."
+                if(newPR.text.toString() != newP.text.toString()){
+                    newPR.error = "Password does not match."
                     return false
                 }
-                if(oldp.text.toString() != oldPasswd){
-                    oldp.error = "Wrong password."
+                if(oldP.text.toString() != sharedPreferences.getString("passwd", "")){
+                    oldP.error = "Wrong password."
+                    return false
+                }
+                if(!atLeastOneUppercase.matches(newP.text.toString())){
+                    newP.error = "Required at least one uppercase."
+                    return false
+                }
+                if(!atLeastOneDigit.matches(newP.text.toString())){
+                    newP.error = "Required at least one digit."
+                    return false
+                }
+                if(!atLeastOneSpecial.matches(newP.text.toString())){
+                    newP.error = "Required at least one special."
                     return false
                 }
                     return true
@@ -50,18 +73,9 @@ class PasswordActivity : AppCompatActivity() {
 
             if(validPassword()){
                 Toast.makeText(this, "Ok", Toast.LENGTH_SHORT).show()
-                val url = "https://10.0.2.2:443/reset-password/${oldPasswd}/${newpr.text}"
-                val stringRequest = StringRequest(
-                    Request.Method.POST, url,
-                    { response ->
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-
-                    }, { error ->
-                    })
-                queue.add(stringRequest)
-
-
+                sharedPreferences.edit().putString("passwd", newP.text.toString()).apply()
+                val intentChangePasswordActivity = Intent(applicationContext, MainActivity::class.java)
+                startActivity(intentChangePasswordActivity)
                 }
 
         }
