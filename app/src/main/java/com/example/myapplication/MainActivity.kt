@@ -24,7 +24,10 @@ class MainActivity : AppCompatActivity() {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
 
-
+        if(!sharedPreferences.contains("passwd")){
+            val dialog = InitialPasswordFragment()
+            dialog.show(supportFragmentManager, "initialPasswordDialog")
+        }
 
 
         val button = findViewById<Button>(R.id.showMessageBtn)
@@ -36,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             val password = findViewById<EditText>(R.id.passwordField)
 
             if (password.text.toString() != "") {
-                if(password.text.toString().equals(sharedPreferences.getString("passwd", ""))){
+                if(password.text.toString() == sharedPreferences.getString("passwd", "")){
                     startActivity(intent)
                 } else {
                     password.error = "Wrong password."
