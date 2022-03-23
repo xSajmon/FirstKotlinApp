@@ -9,12 +9,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.example.myapplication.utils.Validator
 
 
 class PasswordActivity : AppCompatActivity() {
-    private val atLeastOneUppercase = Regex(".*[A-Z].*")
-    private val atLeastOneDigit = Regex(".*\\d.*")
-    private val atLeastOneSpecial = Regex(".*\\W.*")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,38 +34,18 @@ class PasswordActivity : AppCompatActivity() {
             val newPR: EditText = findViewById(R.id.newpass2)
 
             fun validPassword(): Boolean{
-                if(oldP.text.isEmpty()){
-                    oldP.error = "Old password required."
-                    return false
-                }
-                if(newP.text.toString().isEmpty()){
-                    newP.error = "Enter new password"
-                    return false
-                    }
-                if(newPR.text.toString().isEmpty()){
-                    newPR.error = "Confirm new password."
-                        return false
-                    }
-                if(newPR.text.toString() != newP.text.toString()){
-                    newPR.error = "Password does not match."
-                    return false
-                }
+
+                if(Validator.isEmpty(oldP, "Old password required.")) return false
+                if(Validator.isEmpty(newP, "Enter new password.")) return false
+                if(Validator.isEmpty(newPR, "Confirm new password.")) return false
+                if(!Validator.isMatching(newP, newPR)) return false
+                if(!Validator.isPasswordValid(newP)) return false
+
                 if(oldP.text.toString() != sharedPreferences.getString("passwd", "")){
                     oldP.error = "Wrong password."
                     return false
                 }
-                if(!atLeastOneUppercase.matches(newP.text.toString())){
-                    newP.error = "Required at least one uppercase."
-                    return false
-                }
-                if(!atLeastOneDigit.matches(newP.text.toString())){
-                    newP.error = "Required at least one digit."
-                    return false
-                }
-                if(!atLeastOneSpecial.matches(newP.text.toString())){
-                    newP.error = "Required at least one special."
-                    return false
-                }
+
                     return true
             }
 
