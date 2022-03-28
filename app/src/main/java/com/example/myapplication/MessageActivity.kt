@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.example.myapplication.utils.AppPreferences
 
 class MessageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,14 +18,7 @@ class MessageActivity : AppCompatActivity() {
         val editText: EditText = findViewById(R.id.messageBody)
 
 
-        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        val sharedPreferences = EncryptedSharedPreferences.create(
-            "xyz",
-            masterKey,
-            applicationContext,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        val sharedPreferences = AppPreferences.getInstance(applicationContext)
 
         editText.setText(sharedPreferences.getString("msg", ""))
         val button: Button = findViewById(R.id.saveBtn)

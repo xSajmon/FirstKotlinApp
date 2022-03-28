@@ -42,7 +42,7 @@
             android:layout_width="242dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Show" />
+            android:text="@string/show" />
 
 
     </LinearLayout>
