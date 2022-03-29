@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import com.example.myapplication.utils.AppPreferences
+import com.example.myapplication.utils.MainApplication
 
 
 class InitialPasswordFragment : DialogFragment() {
@@ -18,16 +18,10 @@ class InitialPasswordFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
        val view = inflater.inflate(R.layout.fragment_initial_password, container, false)
 
-        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        val sharedPreferences = EncryptedSharedPreferences.create(
-            "xyz",
-            masterKey,
-            view.context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        val sharedPreferences =  AppPreferences.getInstance(MainApplication.applicationContext())
 
         val initialPasswordBtn = view.findViewById<Button>(R.id.initialPasswordBtn)
 
