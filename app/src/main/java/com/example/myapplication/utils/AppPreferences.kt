@@ -3,7 +3,6 @@ package com.example.myapplication.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -21,11 +20,14 @@ class AppPreferences {
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             .setKeySize(256)
+//            .setUserAuthenticationRequired(true)
+//            .setUserAuthenticationParameters(0, KeyProperties.AUTH_DEVICE_CREDENTIAL)
             .build()
 
         private val masterKey = MasterKey.Builder(MainApplication.applicationContext())
             .setKeyGenParameterSpec(advancedSpec)
             .build()
+
 
 
         fun getInstance(context: Context): SharedPreferences {
