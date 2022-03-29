@@ -6,8 +6,6 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
 import com.example.myapplication.utils.AppPreferences
 
 class MessageActivity : AppCompatActivity() {
@@ -37,10 +35,10 @@ class MessageActivity : AppCompatActivity() {
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 }
-           builder.show()
+            builder.show()
         }
 
-        buttonP.setOnClickListener{
+        buttonP.setOnClickListener {
             val intentPasswordActivity = Intent(this, PasswordActivity::class.java)
             startActivity(intentPasswordActivity)
         }
