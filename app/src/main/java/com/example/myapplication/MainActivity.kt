@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -29,9 +30,8 @@ class MainActivity : AppCompatActivity() {
 
 
         val button = findViewById<Button>(R.id.showMessageBtn)
+
         button.setOnClickListener {
-
-
             val intent = Intent(this, MessageActivity::class.java)
             val password = findViewById<EditText>(R.id.passwordField)
 
@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity() {
                                 sharedPreferences.edit()
                                     .putString("milli", (millis / 1000).toString()).apply()
                                 button.text = sharedPreferences.getString("milli", null)
-
-
                             }
 
                             override fun onFinish() {
@@ -77,21 +75,34 @@ class MainActivity : AppCompatActivity() {
                                 button.isEnabled = true
                                 clickCount = 0
                             }
-
                         }
                         timer.start()
                     }
                 }
             } else {
-
                 password.error = "Enter password."
             }
         }
+
     }
 
     override fun onBackPressed() {}
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_activity_menu, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        if(id == R.id.delete_button){
+            AppPreferences.getInstance(applicationContext).edit().remove("passwd").apply()
+            finish()
+            startActivity(Intent(applicationContext, MainActivity::class.java))
+
+            overridePendingTransition(1,1)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
