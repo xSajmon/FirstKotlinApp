@@ -30,9 +30,9 @@ class AppPreferences {
 
 
 
-        fun getInstance(context: Context): SharedPreferences {
+        fun getInstance(): SharedPreferences {
             sharedPreferences = EncryptedSharedPreferences.create(
-                context,
+                MainApplication.applicationContext(),
                 "xyz",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,

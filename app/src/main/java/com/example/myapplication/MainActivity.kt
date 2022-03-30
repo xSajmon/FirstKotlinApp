@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
 
-        val sharedPreferences = AppPreferences.getInstance(applicationContext)
+        val sharedPreferences = AppPreferences.getInstance()
 
 
         if (!sharedPreferences.contains("passwd")) {
@@ -129,12 +129,11 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.main_activity_menu, menu)
         return true
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
         if(id == R.id.delete_button){
-            AppPreferences.getInstance(applicationContext).edit().remove("passwd").apply()
+            AppPreferences.getInstance().edit().remove("passwd").apply()
             finish()
             startActivity(Intent(applicationContext, MainActivity::class.java))
 

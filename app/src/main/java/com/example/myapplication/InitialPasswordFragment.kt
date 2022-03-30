@@ -1,5 +1,8 @@
 package com.example.myapplication
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,10 +23,9 @@ class InitialPasswordFragment : DialogFragment() {
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_initial_password, container, false)
-
-        val sharedPreferences = AppPreferences.getInstance(MainApplication.applicationContext())
-
+        val sharedPreferences = AppPreferences.getInstance()
         val initialPasswordBtn = view.findViewById<Button>(R.id.initialPasswordBtn)
+        dialog?.setCanceledOnTouchOutside(false)
 
         initialPasswordBtn.setOnClickListener {
 
@@ -36,6 +38,7 @@ class InitialPasswordFragment : DialogFragment() {
             }
 
         }
+
         return view
     }
 

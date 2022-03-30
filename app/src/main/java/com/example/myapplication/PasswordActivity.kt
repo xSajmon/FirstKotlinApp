@@ -18,7 +18,7 @@ class PasswordActivity : AppCompatActivity() {
         setContentView(R.layout.activity_password)
 
         val button: Button = findViewById(R.id.reset)
-        val sharedPreferences = AppPreferences.getInstance(applicationContext)
+        val sharedPreferences = AppPreferences.getInstance()
 
         button.setOnClickListener {
             val oldP: EditText = findViewById(R.id.oldpass)

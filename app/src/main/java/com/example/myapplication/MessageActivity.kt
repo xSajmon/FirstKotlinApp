@@ -16,7 +16,7 @@ class MessageActivity : AppCompatActivity() {
         val editText: EditText = findViewById(R.id.messageBody)
 
 
-        val sharedPreferences = AppPreferences.getInstance(applicationContext)
+        val sharedPreferences = AppPreferences.getInstance()
 
         editText.setText(sharedPreferences.getString("msg", ""))
         val button: Button = findViewById(R.id.saveBtn)
