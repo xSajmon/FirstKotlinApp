@@ -18,7 +18,6 @@ class PasswordActivity : AppCompatActivity() {
         setContentView(R.layout.activity_password)
 
         val button: Button = findViewById(R.id.reset)
-        val sharedPreferences = AppPreferences.getInstance()
 
         button.setOnClickListener {
             val oldP: EditText = findViewById(R.id.oldpass)
@@ -33,7 +32,7 @@ class PasswordActivity : AppCompatActivity() {
                 if (!Validator.isMatching(newP, newPR)) return false
                 if (!Validator.isPasswordValid(newP)) return false
 
-                if (oldP.text.toString() != sharedPreferences.getString("passwd", "")) {
+                if (!AppPreferences.check(oldP.text.toString())) {
                     oldP.error = "Wrong password."
                     return false
                 }
@@ -43,7 +42,7 @@ class PasswordActivity : AppCompatActivity() {
 
             if (validPassword()) {
                 Toast.makeText(this, "Ok", Toast.LENGTH_SHORT).show()
-                sharedPreferences.edit().putString("passwd", newP.text.toString()).apply()
+                AppPreferences.put("passwd", newP.text.toString())
                 val intentChangePasswordActivity =
                     Intent(applicationContext, MainActivity::class.java)
                 startActivity(intentChangePasswordActivity)

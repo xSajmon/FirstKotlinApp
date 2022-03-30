@@ -19,6 +19,7 @@ import java.util.concurrent.Executor
 
 class MainActivity : AppCompatActivity() {
     var clickCount = 0
+    private lateinit var timer :CountDownTimer
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
@@ -29,16 +30,21 @@ class MainActivity : AppCompatActivity() {
         executor = ContextCompat.getMainExecutor(this)
         biometricPrompt = BiometricPrompt(this, executor,
             object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int,
-                                                   errString: CharSequence) {
+                override fun onAuthenticationError(
+                    errorCode: Int,
+                    errString: CharSequence
+                ) {
                     super.onAuthenticationError(errorCode, errString)
-                    Toast.makeText(applicationContext,
-                        "Authentication error: $errString", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        applicationContext,
+                        "Authentication error: $errString", Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
 
                 override fun onAuthenticationSucceeded(
-                    result: BiometricPrompt.AuthenticationResult) {
+                    result: BiometricPrompt.AuthenticationResult
+                ) {
                     val intent = Intent(applicationContext, MessageActivity::class.java)
                     startActivity(intent)
                     super.onAuthenticationSucceeded(result)
@@ -46,15 +52,20 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
-                    Toast.makeText(applicationContext, "Authentication failed",
-                        Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        applicationContext, "Authentication failed",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
+
                 }
             })
         promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Verify your identity:")
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or
-                BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            .setAllowedAuthenticators(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
             .build()
 
 
@@ -69,12 +80,14 @@ class MainActivity : AppCompatActivity() {
 
         val button = findViewById<Button>(R.id.showMessageBtn)
 
+
         button.setOnClickListener {
 
-            val password = findViewById<EditText>(R.id.passwordField)
-
+            val password  = findViewById<EditText>(R.id.passwordField)
+            AppPreferences.hashing(password.text.toString())
+            println(AppPreferences.check(password.text.toString()))
             if (password.text.toString() != "") {
-                if (password.text.toString() == sharedPreferences.getString("passwd", "")) {
+                if (AppPreferences.check(password.text.toString())) {
                     biometricPrompt.authenticate(promptInfo)
                 } else {
 
@@ -95,25 +108,6 @@ class MainActivity : AppCompatActivity() {
                                 R.color.grey
                             )
                         )
-                        val timer = object : CountDownTimer(30000, 1000) {
-                            override fun onTick(millis: Long) {
-                                sharedPreferences.edit()
-                                    .putString("milli", (millis / 1000).toString()).apply()
-                                button.text = sharedPreferences.getString("milli", null)
-                            }
-
-                            override fun onFinish() {
-                                button.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        applicationContext,
-                                        R.color.purple_500
-                                    )
-                                )
-                                button.setText(R.string.show)
-                                button.isEnabled = true
-                                clickCount = 0
-                            }
-                        }
                         timer.start()
                     }
                 }
@@ -121,9 +115,26 @@ class MainActivity : AppCompatActivity() {
                 password.error = "Enter password."
             }
         }
+        timer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millis: Long) {
+                sharedPreferences.edit()
+                    .putString("milli", (millis / 1000).toString()).apply()
+                button.text = sharedPreferences.getString("milli", null)
+            }
 
+            override fun onFinish() {
+                button.setBackgroundColor(
+                    ContextCompat.getColor(
+                        applicationContext,
+                        R.color.purple_500
+                    )
+                )
+                button.setText(R.string.show)
+                button.isEnabled = true
+                clickCount = 0
+            }
+        }
     }
-
     override fun onBackPressed() {}
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_activity_menu, menu)
@@ -142,4 +153,6 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+
 }

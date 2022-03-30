@@ -23,7 +23,6 @@ class InitialPasswordFragment : DialogFragment() {
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_initial_password, container, false)
-        val sharedPreferences = AppPreferences.getInstance()
         val initialPasswordBtn = view.findViewById<Button>(R.id.initialPasswordBtn)
         dialog?.setCanceledOnTouchOutside(false)
 
@@ -31,9 +30,7 @@ class InitialPasswordFragment : DialogFragment() {
 
             val initialPasswordField = view.findViewById<EditText>(R.id.initialPasswordField)
             if (initialPasswordField.text.toString() != "") {
-                sharedPreferences.edit().putString("passwd", initialPasswordField.text.toString())
-                    .apply()
-
+                AppPreferences.put("passwd", initialPasswordField.text.toString())
                 dismiss()
             }
 
