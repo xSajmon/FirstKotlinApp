@@ -20,7 +20,6 @@ class MessageActivity : AppCompatActivity() {
 
         editText.setText(sharedPreferences.getString("msg", ""))
         val button: Button = findViewById(R.id.saveBtn)
-        val buttonP: Button = findViewById(R.id.resetBtn)
 
 
         button.setOnClickListener {
@@ -38,10 +37,6 @@ class MessageActivity : AppCompatActivity() {
             builder.show()
         }
 
-        buttonP.setOnClickListener {
-            val intentPasswordActivity = Intent(this, PasswordActivity::class.java)
-            startActivity(intentPasswordActivity)
-        }
 
     }
 

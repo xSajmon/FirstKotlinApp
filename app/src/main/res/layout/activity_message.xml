@@ -36,13 +36,6 @@
             android:text="@string/save"
             android:layout_marginHorizontal="30dp" />
 
-        <Button
-            android:id="@+id/resetBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/reset_password"
-            android:layout_marginHorizontal="30dp" />
-
 
     </LinearLayout>
 
