@@ -4,6 +4,7 @@ package com.example.myapplication
 import android.content.Intent
 import android.os.Bundle
 import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.widget.ImageView
 import android.widget.Toast
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,41 +56,35 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-        promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login for my app")
-            .setSubtitle("Log in using your biometric credential")
-            .setNegativeButtonText("Use account password")
-            .build()
-
-
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Title")
+            .setTitle("Verify your identity:")
             .setNegativeButtonText("Cancel")
             .build()
-
-        generateSecretKey(KeyGenParameterSpec.Builder(
-            KEY_ALIAS,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-            .setUserAuthenticationRequired(true)
-            .setInvalidatedByBiometricEnrollment(true)
-            .build())
+//
+//        generateSecretKey(KeyGenParameterSpec.Builder(
+//            KEY_ALIAS,
+//            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+//            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+//            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+//            .setUserAuthenticationRequired(true)
+//            .setInvalidatedByBiometricEnrollment(true)
+//            .build())
 
 
         val image = findViewById<ImageView>(R.id.imageView)
         image.setOnClickListener{
             val cipher = getCipher()
             val secretKey = getSecretKey()
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+            try{
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+                biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+            } catch (e: KeyPermanentlyInvalidatedException){
+                finish()
+            }
+
 
 
         }
-
-
-
-
 
     }
 
